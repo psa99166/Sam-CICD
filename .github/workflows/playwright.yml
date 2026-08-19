@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: name: Playwright Tests - Quality Gate
 
 on:
   push:
