@@ -14,7 +14,7 @@ test.describe('Login', () => {
 
     // 3. Check the "Sign in with Email" option is shown
     await expect(
-      page.getByRole('button', { name: 'This should fail' })
+      page.getByRole('button', { name: 'Sign in with Email' })
     ).toBeVisible();
   });
 
