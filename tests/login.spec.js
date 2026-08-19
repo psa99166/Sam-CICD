@@ -1,45 +1,60 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
 
-// Login tests must start logged out
-test.use({ storageState: { cookies: [], origins: [] } });
+const { test, expect } = require('@playwright/test');
+const { LoginPage } = require('../pages/LoginPage');
+const { generateEmail } = require('../utils/testData');
+
+test.use({
+  storageState: {
+    cookies: [],
+    origins: []
+  }
+});
 
 test.describe('Login', () => {
-  test('Sign in opens the modal with "Sign in with Email"', async ({ page }) => {
-    // 1. Open Samantha
-    await page.goto('/');
 
-    // 2. Click "Sign in" in the top nav
-    await page.getByRole('link', { name: 'Sign in' }).click();
+  test('Sign in opens the modal', async ({ page }) => {
 
-    // 3. Check the "Sign in with Email" option is shown
+    const loginPage = new LoginPage(page);
+
+    await loginPage.goto();
+
+    await loginPage.clickSignIn();
+
     await expect(
-      page.getByRole('button', { name: 'Sign in with Email' })
+      loginPage.signInWithEmailButton
     ).toBeVisible();
   });
 
-  test('Sign in with Email shows the email screen and Send code', async ({ page }) => {
-    // 1. Open Samantha
-    await page.goto('/');
 
-    // 2. Sign in
-    await page.getByRole('link', { name: 'Sign in' }).click();
+  test('Sign in with Email shows email screen', async ({ page }) => {
 
-    // 3. Sign in with Email
-    await page.getByRole('button', { name: 'Sign in with Email' }).click();
+    const loginPage = new LoginPage(page);
 
-    // 4. Email screen is showing
+    await loginPage.goto();
+
+    await loginPage.clickSignIn();
+
+    await loginPage.clickSignInWithEmail();
+
     await expect(
-      page.getByText("Enter your email and we'll send you a one-time code.")
+      loginPage.emailDescription
     ).toBeVisible();
 
-    // 5. Email field accepts input
-    const emailField = page.getByPlaceholder('you@example.com');
-    await expect(emailField).toBeVisible();
-    await emailField.fill('qa.test@example.com');
-    await expect(emailField).toHaveValue('qa.test@example.com');
+    // Generate unique email
+    const email = generateEmail();
 
-    // 6. Send code button is there and clickable
-    await expect(page.getByRole('button', { name: 'Send code' })).toBeEnabled();
+    await loginPage.enterEmail(email);
+
+    // Verify the generated email
+    await expect(
+      loginPage.emailField
+    ).toHaveValue(email);
+
+    // Verify Send code button
+    await expect(
+      loginPage.sendCodeButton
+    ).toBeEnabled();
   });
+
 });
