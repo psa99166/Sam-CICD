@@ -24,7 +24,7 @@ export default defineConfig({
     baseURL: 'https://samantha-stage.flashpact.in',
 
     // Open Chromium locally
-    headless: false,
+    headless: !!process.env.CI,
 
     // Take screenshot when test fails
     screenshot: 'only-on-failure',
